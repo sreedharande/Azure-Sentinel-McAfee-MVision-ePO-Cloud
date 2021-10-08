@@ -64,7 +64,7 @@
       "type": "string",   
 	  "defaultValue": "threats",
       "metadata": {
-        "description": "Specifies the McAfee MVISION Events Type - threats, incidents (dlp), all."
+        "description": "Specifies the McAfee MVISION Events Type - threats, incidents, all."
       }
     }	
   },
