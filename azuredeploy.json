@@ -254,7 +254,7 @@
 				"[resourceId('Microsoft.KeyVault/vaults/', variables('KeyVaultName'))]"
 			  ],
 			  "properties": {
-				"value": "[parameters('MvisionPassword')]",
+				"value": "[parameters('Password')]",
 				"contentType": "string",
 				"attributes": {
 				  "enabled": true
