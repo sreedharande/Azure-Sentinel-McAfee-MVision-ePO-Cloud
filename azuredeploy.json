@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "FunctionName": {
-      "defaultValue": "McAfee_MVISION_ePO",
+      "defaultValue": "McAfeeMVISIONePO",
       "type": "string",
       "metadata": {
         "description": "Specifies the name of the Function App."
