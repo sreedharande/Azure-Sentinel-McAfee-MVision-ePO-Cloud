@@ -35,14 +35,14 @@
     },
 	"MvisionTokenUrl": {
       "type": "string",      
-	  "default": "https://iam.mcafee-cloud.com/iam/v1.0/token",
+	  "defaultValue": "https://iam.mcafee-cloud.com/iam/v1.0/token",
       "metadata": {
         "description": "Specifies the McAfee MVISION Token url."
       }
     },
 	"MvisionEventsUrl": {
       "type": "string",   
-	  "default": "https://arevents.mvision.mcafee.com",
+	  "defaultValue": "https://arevents.mvision.mcafee.com",
       "metadata": {
         "description": "Specifies the McAfee MVISION Events url."
       }
@@ -55,14 +55,14 @@
     },
 	"MvisionScope": {
       "type": "string",   
-	  "default": "epo.evt.r",
+	  "defaultValue": "epo.evt.r",
       "metadata": {
         "description": "Specifies the McAfee MVISION Scope."
       }
     },
 	"MvisionEventsType": {
       "type": "string",   
-	  "default": "threats",
+	  "defaultValue": "threats",
       "metadata": {
         "description": "Specifies the McAfee MVISION Events Type - threats, incidents (dlp), all."
       }
