@@ -1,15 +1,14 @@
 import json
+import datetime
 import os
 import base64
 import hashlib
 import hmac
 import requests
 import threading
-import azure.functions as func
 import logging
 import re
-from datetime import datetime, timedelta
-from io import StringIO
+import azure.functions as func
 
 
 
