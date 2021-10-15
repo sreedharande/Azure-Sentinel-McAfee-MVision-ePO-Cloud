@@ -1,8 +1,5 @@
 import json
-import datetime
-import tempfile
 import os
-import time
 import base64
 import hashlib
 import hmac
@@ -11,8 +8,10 @@ import threading
 import azure.functions as func
 import logging
 import re
-
 from datetime import datetime, timedelta
+from io import StringIO
+
+
 
 sentinel_customer_id = os.environ.get('WorkspaceID')
 sentinel_shared_key = os.environ.get('WorkspaceKey')
@@ -45,6 +44,9 @@ def main(mytimer: func.TimerRequest) -> None:
         logging.info('The timer is past due!')
 
     logging.info('Starting program')
+    file_events = 0
+    failed_sent_events_number = 0
+    successfull_sent_events_number = 0 
 
     mVision_ePO = McAfeeEPO(mvision_epo_token_url, mvision_epo_events_url, mvision_epo_userName, mvision_epo_password, mvision_epo_client_id, mvision_epo_scope)
     ts_from, ts_to = mVision_ePO.get_time_interval()
@@ -161,7 +163,7 @@ class AzureSentinelConnector:
             if queue:
                 queue_list = self._split_big_request(queue)
                 for q in queue_list:
-                    jobs.append(Thread(target=self._post_data, args=(self.customer_id, self.shared_key, q, self.log_type, )))
+                    jobs.append(threading.Thread(target=self._post_data, args=(self.customer_id, self.shared_key, q, self.log_type, )))
 
         for job in jobs:
             job.start()
