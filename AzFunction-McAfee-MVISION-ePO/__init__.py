@@ -1,5 +1,5 @@
 import json
-import datetime
+from datetime import datetime, timedelta
 import os
 import base64
 import hashlib
@@ -104,17 +104,18 @@ class McAfeeEPO:
             logging.error('Could not authenticate. {0} - {1}'.format(str(res.status_code), res.text))            
 
     def get_time_interval(self):
-        ts_from = datetime.datetime.utcnow() - datetime.timedelta(minutes=collection_schedule + 1)
-        ts_to = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
-        ts_from = ts_from.replace(tzinfo=datetime.timezone.utc, second=0, microsecond=0)
-        ts_to = ts_to.replace(tzinfo=datetime.timezone.utc, second=0, microsecond=0)
-        return ts_from, ts_to 
+        ts_now = datetime.utcnow()
+        ts_nowiso = ts_now.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
 
-    def get_events(self, ts_from, ts_to, eventType, eventsLimit):
+        ts_past = ts_now - timedelta(minutes=collection_schedule)
+        ts_pastiso = ts_past.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
+        return ts_pastiso, ts_nowiso 
+
+    def get_events(self, ts_pastiso, ts_nowiso, eventType, eventsLimit):
         params = {
             'type': eventType,  
-            'since': ts_from,
-            'until': ts_to,
+            'since': ts_pastiso,
+            'until': ts_nowiso,
             'limit': eventsLimit
         }
 
