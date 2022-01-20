@@ -53,22 +53,25 @@ def main(mytimer: func.TimerRequest) -> None:
     logging.info('Retrieving McAfee MVISION ePO Events from {} to {}'.format(ts_from, ts_to))
     ePO_Events = mVision_ePO.get_events(ts_from, ts_to, mvision_epo_event_type, mvision_epo_event_limit)
 
-    for event in ePO_Events['Events']:
-        sentinel = AzureSentinelConnector(logAnalyticsUri, sentinel_customer_id, sentinel_shared_key, sentinel_log_type, queue_size=10000, bulks_number=10)
-        with sentinel:
-            sentinel.send(event)
-        file_events += 1 
-        failed_sent_events_number += sentinel.failed_sent_events_number
-        successfull_sent_events_number += sentinel.successfull_sent_events_number
+    if ePO_Events is not None:
+        for event in ePO_Events['Events']:
+            sentinel = AzureSentinelConnector(logAnalyticsUri, sentinel_customer_id, sentinel_shared_key, sentinel_log_type, queue_size=10000, bulks_number=10)
+            with sentinel:
+                sentinel.send(event)
+            file_events += 1 
+            failed_sent_events_number += sentinel.failed_sent_events_number
+            successfull_sent_events_number += sentinel.successfull_sent_events_number
     
-    if failed_sent_events_number:
-        logging.info('{} McAfee MVISION ePO Events have not been sent'.format(failed_sent_events_number))
+        if failed_sent_events_number:
+            logging.info('{} McAfee MVISION ePO Events have not been sent'.format(failed_sent_events_number))
 
-    if successfull_sent_events_number:
-        logging.info('Program finished. {} McAfee MVISION ePO Events have been sent.'.format(successfull_sent_events_number))
+        if successfull_sent_events_number:
+            logging.info('Program finished. {} McAfee MVISION ePO Events have been sent.'.format(successfull_sent_events_number))
 
-    if successfull_sent_events_number == 0 and failed_sent_events_number == 0:
-        logging.info('No Fresh McAfee MVISION ePO Events')
+        if successfull_sent_events_number == 0 and failed_sent_events_number == 0:
+            logging.info('No Fresh McAfee MVISION ePO Events')
+    else:
+        logging.info('Error in retrieving McAfee MVISION ePO Events')
 
 class McAfeeEPO:
     def __init__(self, mVision_Token_Url, mVision_Events_Url, ePO_UserName, ePO_Password, mVision_ClientId, mVision_Scope):
