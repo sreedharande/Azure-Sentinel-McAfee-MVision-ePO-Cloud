@@ -125,7 +125,8 @@ class McAfeeEPO:
         res = self.session.get('{0}/eventservice/api/v2/events'.format(self.base), params=params)
 
         if res.ok:
-            logging.info('Successfully retrieved MVISION EPO Events.')            
+            logging.info('Successfully retrieved MVISION EPO Events.')
+            logging.info(json.dumps(res.json()))           
             return res.json()
         else:
             logging.error('Could not retrieve MVISION EPO Events. {0} - {1}'.format(str(res.status_code), res.text))           
