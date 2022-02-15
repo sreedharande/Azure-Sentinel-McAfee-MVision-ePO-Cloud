@@ -1,13 +1,14 @@
 import json
-from datetime import datetime, timedelta
 import os
 import base64
 import hashlib
 import hmac
 import requests
-import threading
+from threading import Thread
 import logging
+import datetime as dt
 import re
+from datetime import timedelta
 import azure.functions as func
 
 
@@ -56,8 +57,11 @@ def main(mytimer: func.TimerRequest) -> None:
     if ePO_Events is not None:
         for event in ePO_Events['Events']:
             sentinel = AzureSentinelConnector(logAnalyticsUri, sentinel_customer_id, sentinel_shared_key, sentinel_log_type, queue_size=10000, bulks_number=10)
+            payload = {}
+            payload.update({'sourcetype':ePO_Events["type"]})
+            payload.update(event)
             with sentinel:
-                sentinel.send(event)
+                sentinel.send(payload)
             file_events += 1 
             failed_sent_events_number += sentinel.failed_sent_events_number
             successfull_sent_events_number += sentinel.successfull_sent_events_number
@@ -107,7 +111,7 @@ class McAfeeEPO:
             logging.error('Could not authenticate. {0} - {1}'.format(str(res.status_code), res.text))            
 
     def get_time_interval(self):
-        ts_now = datetime.utcnow()
+        ts_now = dt.datetime.utcnow()
         ts_nowiso = ts_now.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
 
         ts_past = ts_now - timedelta(minutes=collection_schedule)
@@ -167,7 +171,7 @@ class AzureSentinelConnector:
             if queue:
                 queue_list = self._split_big_request(queue)
                 for q in queue_list:
-                    jobs.append(threading.Thread(target=self._post_data, args=(self.customer_id, self.shared_key, q, self.log_type, )))
+                    jobs.append(Thread(target=self._post_data, args=(self.customer_id, self.shared_key, q, self.log_type, )))
 
         for job in jobs:
             job.start()
@@ -198,7 +202,7 @@ class AzureSentinelConnector:
         method = 'POST'
         content_type = 'application/json'
         resource = '/api/logs'
-        rfc1123date = datetime.datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
+        rfc1123date = dt.datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
         content_length = len(body)
         signature = self._build_signature(customer_id, shared_key, rfc1123date, content_length, method, content_type, resource)
         uri = self.log_analytics_uri + resource + '?api-version=2016-04-01'
